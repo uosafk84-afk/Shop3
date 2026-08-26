@@ -4,125 +4,132 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Daily Shop Crystal</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#023e5e">
+<meta name="theme-color" content="#F2F2F7">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Shop Crystal">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-app-compat.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-firestore-compat.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <style>
 :root{
-  --deep:#0b5cff; --mid:#4da3ff; --bright:#8bd7ff; --foam:#f5fbff;
-  --glass:rgba(255,255,255,.66); --glassStrong:rgba(255,255,255,.82); --line:rgba(255,255,255,.82);
-  --text:#102a43; --muted:#6b7c93; --shine:rgba(255,255,255,.98);
+  --bg:#F2F2F7; --surface:#FFFFFF;
+  --glass:rgba(255,255,255,.70); --glassBorder:rgba(255,255,255,.9);
+  --text:#1C1C1E; --text2:#6E6E73;
+  --blue:#007AFF; --blueDark:#0060DF; --green:#34C759; --red:#FF3B30; --orange:#FF9500;
+  --sep:rgba(60,60,67,.13); --fill:rgba(120,120,128,.10);
+  --shadow:0 10px 28px rgba(60,60,67,.10),0 2px 8px rgba(60,60,67,.06);
+  --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.2,.8,.2,1);
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,Arial,sans-serif;color:var(--text);min-height:100vh;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,sans-serif;
+  color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   background:
-    radial-gradient(circle at 12% 0%,rgba(255,255,255,.98),transparent 30%),
-    radial-gradient(circle at 92% 8%,rgba(175,225,255,.38),transparent 30%),
-    radial-gradient(circle at 50% 100%,rgba(125,198,255,.22),transparent 42%),
-    linear-gradient(145deg,#f8fcff,#eef8ff 48%,#e8f5ff);
+    radial-gradient(circle at 18% 0%,rgba(0,122,255,.06),transparent 45%),
+    radial-gradient(circle at 88% 8%,rgba(52,199,89,.05),transparent 40%),
+    var(--bg);
   background-attachment:fixed;overflow-x:hidden;
 }
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.65),transparent 18%),
-             radial-gradient(circle at 75% 55%,rgba(255,255,255,.45),transparent 22%);
-}
-
-.app{max-width:1500px;margin:auto;padding:12px;position:relative;z-index:1}
-.glass{background:var(--glass);border:1px solid var(--line);
-  box-shadow:0 14px 40px rgba(0,60,110,.28),inset 0 1px 0 var(--shine),inset 0 -1px 12px rgba(255,255,255,.12);
-  border-radius:22px;backdrop-filter:blur(20px) saturate(160%);position:relative;overflow:hidden}
-header{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:8px;z-index:5}
-.title{font-size:25px;font-weight:800;letter-spacing:.3px;text-shadow:0 1px 0 rgba(255,255,255,.6)}
-.date{font-size:14px;opacity:.85}
-nav{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
-button,.filebtn{border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.35);color:var(--text);padding:10px 14px;border-radius:14px;font-weight:700;cursor:pointer;box-shadow:0 5px 15px rgba(0,80,140,.15);transition:.15s}
-button:hover,.filebtn:hover{background:rgba(255,255,255,.6);transform:translateY(-1px)}
-button.primary{background:linear-gradient(135deg,#ffffff,#8be9ff 60%,#39c9f8);color:#04456e}
-.view{display:none}.view.active{display:block}
+.app{max-width:900px;margin:auto;padding:12px 14px 44px;position:relative;z-index:1}
+.glass{background:var(--glass);border:1px solid var(--glassBorder);box-shadow:var(--shadow);
+  border-radius:20px;backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
+  position:relative;overflow:hidden}
+header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:8px;z-index:5}
+.title{font-size:21px;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.title img{width:32px;height:32px;border-radius:9px;display:block;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.date{font-size:12.5px;color:var(--text2);margin-top:2px;font-weight:500}
+nav{display:flex;gap:3px;margin:14px 0;flex-wrap:wrap;background:var(--fill);padding:4px;border-radius:14px}
+nav button{border:none;background:transparent;color:var(--text2);padding:9px 12px;border-radius:11px;font-weight:600;
+  font-size:13px;cursor:pointer;transition:background-color .2s var(--ease),color .2s var(--ease),transform .12s var(--spring);
+  flex:1 1 auto;text-align:center;white-space:nowrap}
+.filebtn{border:none;background:transparent;color:var(--text2);padding:9px 12px;border-radius:11px;font-weight:600;
+  font-size:13px;cursor:pointer;flex:1 1 auto;text-align:center;white-space:nowrap;transition:transform .12s var(--spring)}
+nav button:active,.filebtn:active{transform:scale(.95)}
+nav button.navActive{background:var(--surface);color:var(--text);box-shadow:0 3px 10px rgba(0,0,0,.09)}
+button{font-family:inherit}
+button.primary{border:none;background:var(--blue);color:#fff;padding:10px 16px;border-radius:12px;font-weight:600;
+  font-size:14px;cursor:pointer;transition:transform .12s var(--spring),background-color .15s;box-shadow:0 4px 14px rgba(0,122,255,.35)}
+button.primary:active{transform:scale(.95);background:var(--blueDark)}
+.view{display:none}
+.view.active{display:block;animation:viewIn .32s var(--ease)}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-.card{padding:10px}.label{font-size:12px;opacity:.75}.value{font-size:19px;font-weight:800;margin-top:2px;color:#04456e}
-.section{margin:10px 0;padding:10px;overflow:auto}
-.section h2{margin:0 0 8px;font-size:17px}
+.card{padding:12px}
+.label{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.value{font-size:19px;font-weight:700;margin-top:3px;color:var(--text)}
+.section{margin:10px 0;padding:16px;overflow:auto}
+.section h2{margin:0 0 10px;font-size:16px;font-weight:700;letter-spacing:-.1px}
 table{border-collapse:separate;border-spacing:3px;width:auto}
-.prodTabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-.prodTabBtn{border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.3);color:var(--text);padding:8px 14px;border-radius:12px;font-weight:700;cursor:pointer}
-.prodTabBtn.active{background:linear-gradient(135deg,#ffffff,#8be9ff 60%,#39c9f8);color:#04456e}
+.prodTabs{display:flex;gap:3px;margin-bottom:10px;flex-wrap:wrap;background:var(--fill);padding:4px;border-radius:14px}
+.prodTabBtn{border:none;background:transparent;color:var(--text2);padding:8px 12px;border-radius:11px;font-weight:600;
+  font-size:12.5px;cursor:pointer;flex:1 1 auto;transition:background-color .2s var(--ease),color .2s var(--ease),transform .12s var(--spring)}
+.prodTabBtn:active{transform:scale(.95)}
+.prodTabBtn.active{background:var(--surface);color:var(--text);box-shadow:0 3px 10px rgba(0,0,0,.09)}
 .prodGrid{position:relative}
 .prodSection{display:none;margin:0}
-.prodSection.active{display:block}
+.prodSection.active{display:block;animation:viewIn .28s var(--ease)}
 .prodTable{width:100%;table-layout:fixed}
-.grpHeader td{background:linear-gradient(135deg,rgba(255,255,255,.65),rgba(139,233,255,.35));font-weight:800;text-align:left;padding:6px 10px;border-radius:8px;color:#04456e;font-size:12px;letter-spacing:.3px}
-.grpHeader.divider td{border-top:3px solid rgba(4,48,78,.35);margin-top:6px}
-.modalOverlay{position:fixed;inset:0;background:rgba(2,30,50,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
-.modalBox{max-width:380px;width:100%;padding:20px;border-radius:18px}
-.modalMsg{white-space:pre-wrap;font-size:14px;line-height:1.5;margin-bottom:14px}
-.modalBtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.modalBtns button{border:none;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer}
-.modalBtns .mbPrimary{background:linear-gradient(135deg,#ffffff,#8be9ff 60%,#39c9f8);color:#04456e}
-.modalBtns .mbSecondary{background:rgba(255,255,255,.4);color:var(--text)}
-.syncBadge{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px}
-.syncBadge.online{background:rgba(120,255,180,.35);color:#04456e}
-.syncBadge.offline{background:rgba(255,220,120,.4);color:#5e3a00}
-th,td{padding:3px 5px;text-align:center}
-th{font-size:11px;background:rgba(255,255,255,.4);border-radius:7px}
-td{background:rgba(255,255,255,.24);border-radius:7px;font-size:12px}
-input,select{width:100%;max-width:64px;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.55);border-radius:6px;padding:4px;color:var(--text);outline:none;font-size:12px;margin:0 auto;display:block}
-input:focus,select:focus{box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.grpHeader td{background:rgba(0,122,255,.08);font-weight:700;text-align:left;padding:7px 10px;border-radius:9px;
+  color:var(--blue);font-size:12px;letter-spacing:.2px}
+.grpHeader.divider td{border-top:2px solid var(--sep);margin-top:6px}
+.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:50;display:flex;align-items:center;
+  justify-content:center;padding:16px;backdrop-filter:blur(6px);animation:fadeIn .2s var(--ease)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modalBox{max-width:290px;width:100%;padding:0;border-radius:18px;overflow:hidden;text-align:center;
+  animation:modalIn .28s var(--ease)}
+@keyframes modalIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.modalMsg{white-space:pre-wrap;font-size:14px;line-height:1.5;padding:22px 18px 16px;font-weight:500}
+.modalBtns{display:flex;border-top:1px solid var(--sep)}
+.modalBtns button{flex:1;border:none;background:transparent;padding:13px 10px;font-weight:600;font-size:15px;
+  cursor:pointer;border-radius:0;transition:background-color .15s}
+.modalBtns button:active{background:rgba(0,0,0,.05)}
+.modalBtns button+button{border-left:1px solid var(--sep)}
+.modalBtns .mbPrimary{color:var(--blue)}
+.modalBtns .mbSecondary{color:var(--text2)}
+.syncBadge{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:8px}
+.syncBadge.online{background:rgba(52,199,89,.15);color:#1a7a35}
+.syncBadge.offline{background:rgba(255,149,0,.15);color:#9a5b00}
+th,td{padding:5px 6px;text-align:center}
+th{font-size:10.5px;color:var(--text2);font-weight:600;background:transparent}
+td{background:var(--fill);border-radius:8px;font-size:12.5px}
+input,select{width:100%;max-width:64px;border:none;background:var(--fill);border-radius:8px;padding:6px 4px;
+  color:var(--text);outline:none;font-size:12.5px;margin:0 auto;display:block;transition:box-shadow .15s}
+input:focus,select:focus{box-shadow:0 0 0 2px var(--blue)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .totals{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.small{font-size:12px}.danger{color:#9b1c1c}
+.small{font-size:12px;color:var(--text2)}
+.danger{color:var(--red)}
 .mapgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.mapgrid label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
+.mapgrid label{font-size:12px;font-weight:600;display:block;margin-bottom:4px;color:var(--text2)}
 .previewTbl{max-height:220px;overflow:auto;border-radius:12px}
-.bar{height:14px;border-radius:7px;background:linear-gradient(90deg,#0a7fbf,#39c9f8);box-shadow:inset 0 1px 2px rgba(255,255,255,.6)}
+.bar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--blue),#5AC8FA)}
 .barRow{display:grid;grid-template-columns:90px 1fr 70px;gap:8px;align-items:center;margin:6px 0;font-size:12px}
-@media(max-width:900px){.cards,.totals{grid-template-columns:repeat(2,1fr)}.grid2,.mapgrid{grid-template-columns:1fr}header{position:relative}.app{padding:9px}.section{padding:10px}}
-.insightCard{border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:13px;line-height:1.45;border-left:5px solid}
-.insightCard.good{background:rgba(120,255,180,.22);border-color:#1a8a4a}
-.insightCard.warn{background:rgba(255,150,120,.22);border-color:#c0392b}
-.insightCard b{display:block;margin-bottom:2px;font-size:13.5px}
-.insightEmpty{font-size:13px;opacity:.75}
-
-/* iOS-inspired white crystal analytics */
-.section.glass,.card.glass,.glass{
-  background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.52));
-  border:1px solid rgba(255,255,255,.92);
-  box-shadow:0 18px 45px rgba(52,105,150,.12),0 3px 10px rgba(52,105,150,.07),
-             inset 0 1px 0 rgba(255,255,255,.98),inset 0 -1px 0 rgba(185,220,245,.18);
-  backdrop-filter:blur(24px) saturate(145%);
-}
-button,.filebtn{background:rgba(255,255,255,.72);border:1px solid rgba(180,215,240,.55);color:#163b5c;box-shadow:0 5px 18px rgba(40,100,150,.10)}
-button:hover,.filebtn:hover{background:rgba(255,255,255,.94);transform:translateY(-1px)}
-button.primary{background:linear-gradient(135deg,#ffffff,#d9f2ff 45%,#8bd7ff);color:#07538a;box-shadow:0 8px 22px rgba(34,139,220,.18)}
-.view{animation:iosIn .28s ease both}
-@keyframes iosIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.analyticsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.analyticsPanel{padding:18px}
-.analyticsPanel h3{margin:0 0 5px;font-size:18px}
-.panelSub{margin:0 0 14px;color:var(--muted);font-size:13px}
-.metricGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.metric{padding:15px;border-radius:20px;background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 1px rgba(255,255,255,.9)}
-.metric .label{color:var(--muted);font-size:12px}.metric .value{font-size:22px;font-weight:800;margin-top:5px}
-.kpiGood{color:#16865d}.kpiWarn{color:#c77800}
-.chartBox{min-height:260px}.svgChart{width:100%;height:250px;display:block}
-.chartEmpty{height:230px;display:grid;place-items:center;color:var(--muted)}
-.weekGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}
-.weekDay{padding:12px 8px;border-radius:18px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.9);min-height:150px}
-.weekDay.best{box-shadow:0 0 0 2px rgba(43,143,255,.18),0 8px 22px rgba(43,143,255,.10)}
-.weekDayName{font-weight:800;font-size:13px}.weekAvg{font-size:15px;font-weight:800;margin:8px 0 2px}.weekSmall{font-size:11px;color:var(--muted)}
-.weekBar{height:7px;background:rgba(90,160,205,.12);border-radius:99px;overflow:hidden;margin:8px 0}
-.weekBar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#66bfff,#3e8cff)}
-.weekAdvice{margin-top:9px;font-size:11px;line-height:1.35}
-.insightCard{border-radius:18px!important;background:rgba(255,255,255,.62)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:none!important}
-@media(max-width:900px){.analyticsGrid{grid-template-columns:1fr}.metricGrid{grid-template-columns:repeat(2,1fr)}.weekGrid{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:600px){.metricGrid{grid-template-columns:repeat(2,1fr)}.weekGrid{grid-template-columns:repeat(2,1fr)}.analyticsPanel{padding:14px}.svgChart{height:220px}}
+@media(max-width:900px){.cards,.totals{grid-template-columns:repeat(2,1fr)}.grid2,.mapgrid{grid-template-columns:1fr}header{position:relative}.app{padding:10px}.section{padding:14px}}
+.insightCard{border-radius:14px;padding:13px 15px;margin-bottom:8px;font-size:13px;line-height:1.45;background:var(--fill)}
+.insightCard.good{background:rgba(52,199,89,.10)}
+.insightCard.warn{background:rgba(255,59,48,.08)}
+.insightCard b{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:13.5px;font-weight:700}
+.insightCard.good b{color:#1a7a35}
+.insightCard.warn b{color:#c62b20}
+.insightEmpty{font-size:13px;color:var(--text2)}
+.chartWrap{width:100%;height:190px}
+.chartWrap svg{display:block;width:100%;height:100%}
+.prodBarChart{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.prodBarRow{display:grid;grid-template-columns:86px 1fr 68px;gap:10px;align-items:center;font-size:12.5px}
+.prodBarTrack{height:9px;background:var(--fill);border-radius:6px;overflow:hidden}
+.prodBarFill{height:100%;border-radius:6px;transition:width .6s var(--ease)}
+.wdRow{padding:11px 0;border-bottom:1px solid var(--sep)}
+.wdRow:last-child{border-bottom:none}
+.wdHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.wdName{font-weight:700;font-size:13.5px}
+.wdVal{font-size:12px;color:var(--text2);font-weight:600}
+.wdBarTrack{height:8px;background:var(--fill);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.wdBar{height:100%;border-radius:5px;transition:width .6s var(--ease)}
+.wdNote{font-size:12px;color:var(--text2);line-height:1.4}
 </style>
 </head>
 <body>
@@ -133,12 +140,12 @@ button.primary{background:linear-gradient(135deg,#ffffff,#d9f2ff 45%,#8bd7ff);co
   </div>
 </div>
 <div class="app">
-<header class="glass"><div><div class="title">💧 Daily Shop Crystal</div><div class="date" id="todayLabel"></div><div id="syncBadge" class="syncBadge offline">📴 Local only</div></div><button type="button" class="primary" onclick="closeDay()">SAVE & CLOSE DAY</button></header>
+<header class="glass"><div><div class="title"><img src="icon-192.png" alt=""> Daily Shop Crystal</div><div class="date" id="todayLabel"></div><div id="syncBadge" class="syncBadge offline">📴 Local only</div></div><button type="button" class="primary" onclick="closeDay()">SAVE & CLOSE DAY</button></header>
 <nav>
-<button type="button" onclick="show('daily')">Daily Sale</button>
-<button type="button" onclick="show('history')">History</button>
-<button type="button" onclick="show('analytics')">Analytics</button>
-<button type="button" onclick="show('settings')">Products / Prices</button>
+<button type="button" class="navActive" data-view="daily" onclick="show('daily')">Daily Sale</button>
+<button type="button" data-view="history" onclick="show('history')">History</button>
+<button type="button" data-view="analytics" onclick="show('analytics')">Analytics</button>
+<button type="button" data-view="settings" onclick="show('settings')">Products / Prices</button>
 <label class="filebtn">Import Excel <input id="excel" type="file" accept=".xlsx,.xls,.csv" hidden></label>
 </nav>
 
@@ -175,22 +182,11 @@ button.primary{background:linear-gradient(135deg,#ffffff,#d9f2ff 45%,#8bd7ff);co
 <section id="history" class="view"><div class="section glass"><h2>📚 Saved Days (unlimited)</h2><div id="historyList"></div></div><div id="detail"></div></section>
 
 <section id="analytics" class="view">
-<div class="section glass analyticsPanel">
-  <h2>📊 Shop Analysis & Improvement</h2>
-  <p class="panelSub">Your saved days are analyzed automatically. Charts use your real sales and profit history.</p>
-  <div class="metricGrid" id="analyticsCards"></div>
-</div>
-<div class="analyticsGrid">
-  <div class="section glass analyticsPanel"><h3>📈 Sales & Profit Trend</h3><p class="panelSub">Last 30 saved days</p><div id="analyticsTrend" class="chartBox"></div></div>
-  <div class="section glass analyticsPanel"><h3>🧼 Product Performance</h3><p class="panelSub">Sales and profit by product</p><div id="analyticsProductChart" class="chartBox"></div></div>
-</div>
-<div class="section glass analyticsPanel">
-  <h3>📅 What to Improve Each Day of the Week</h3>
-  <p class="panelSub">Average performance by weekday. Recommendations become more accurate as you save more days.</p>
-  <div id="weekdayAnalysis" class="weekGrid"></div>
-</div>
-<div class="section glass analyticsPanel"><h3>🔎 Smart Insights</h3><div id="analyticsInsights"></div></div>
-<div class="section glass analyticsPanel"><h3>📋 Per-Product Totals</h3><div id="analyticsProducts"></div></div>
+<div class="section glass"><h2>🔎 Smart Insights</h2><div id="analyticsInsights"></div></div>
+<div class="section glass"><h2>📊 All-Time Analytics</h2><div class="cards" id="analyticsCards"></div></div>
+<div class="section glass"><h2>📅 Weekday Performance — What To Improve</h2><div id="analyticsWeekday"></div></div>
+<div class="section glass"><h2>Last 30 Saved Days — Sales Trend</h2><div class="chartWrap" id="analyticsTrend"></div></div>
+<div class="section glass"><h2>Per-Product Totals (all history)</h2><div id="analyticsProducts"></div><div class="prodBarChart" id="analyticsProductsChart"></div></div>
 </section>
 
 <section id="settings" class="view"><div class="section glass"><h2>⚙ Product / Price Settings</h2>
@@ -403,89 +399,100 @@ show('history');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth
 }
 function saveSettings(){settings={soap:val(document.getElementById('setSoap').value),surf:val(document.getElementById('setSurf').value),wasleen:val(document.getElementById('setWasleen').value),sh10:val(document.getElementById('setSh10').value)||5,sh6:val(document.getElementById('setSh6').value)||8};storageSet(SET,JSON.stringify(settings));cloudSave('settings',settings);appAlert('Settings saved. Existing entered rows keep their own A Price.');render()}
 function loadSettings(){document.getElementById('setSoap').value=settings.soap??'';document.getElementById('setSurf').value=settings.surf??'';document.getElementById('setWasleen').value=settings.wasleen??57;document.getElementById('setSh10').value=settings.sh10??5;document.getElementById('setSh6').value=settings.sh6??8}
-function show(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='history')renderHistory();if(id==='analytics')renderAnalytics()}
+function show(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button[data-view]').forEach(b=>b.classList.toggle('navActive',b.dataset.view===id));if(id==='history')renderHistory();if(id==='analytics')renderAnalytics()}
 function showProd(tab){
   document.querySelectorAll('.prodSection').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
   document.querySelectorAll('.prodTabBtn').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));
 }
 
 /* ---------- Analytics ---------- */
-function svgLineChart(days){
-  if(!days.length)return '<div class="chartEmpty">Save at least one day to see the chart.</div>';
-  const W=760,H=250,p={l:46,r:16,t:18,b:38}, iw=W-p.l-p.r, ih=H-p.t-p.b;
-  const max=Math.max(...days.flatMap(d=>[d.summary.totalSales||0,d.summary.netProfit||0]),1);
-  const x=i=>p.l+(days.length===1?iw/2:i*iw/(days.length-1));
-  const y=v=>p.t+ih-(Math.max(0,v)/max)*ih;
-  const sales=days.map((d,i)=>`${x(i)},${y(d.summary.totalSales||0)}`).join(' ');
-  const profit=days.map((d,i)=>`${x(i)},${y(d.summary.netProfit||0)}`).join(' ');
-  const grid=[0,.25,.5,.75,1].map(t=>{let yy=p.t+ih-t*ih;return `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="rgba(100,140,170,.16)"/><text x="${p.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#71869a">${money(max*t)}</text>`}).join('');
-  const labels=days.map((d,i)=>{if(days.length>10 && i%Math.ceil(days.length/6)!==0 && i!==days.length-1)return '';return `<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#71869a">${d.date.slice(5)}</text>`}).join('');
-  const dots=days.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.summary.totalSales||0)}" r="3" fill="#3e8cff"/><circle cx="${x(i)}" cy="${y(d.summary.netProfit||0)}" r="3" fill="#16a66a"/>`).join('');
-  return `<svg class="svgChart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5db8ff" stop-opacity=".22"/><stop offset="1" stop-color="#5db8ff" stop-opacity="0"/></linearGradient></defs>${grid}<polygon points="${sales} ${x(days.length-1)},${p.t+ih} ${x(0)},${p.t+ih}" fill="url(#salesGrad)"/><polyline points="${sales}" fill="none" stroke="#3e8cff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${profit}" fill="none" stroke="#16a66a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}<text x="${p.l}" y="12" font-size="10" fill="#3e8cff">Sales</text><text x="${p.l+58}" y="12" font-size="10" fill="#16a66a">Net profit</text></svg>`;
-}
-function svgProductChart(prodTotals,labels){
-  const rows=Object.keys(prodTotals).filter(k=>prodTotals[k][1]||prodTotals[k][2]);
-  if(!rows.length)return '<div class="chartEmpty">No product data yet.</div>';
-  const W=760,H=Math.max(240,rows.length*42+48),p={l:125,r:28,t:18,b:22},iw=W-p.l-p.r;
-  const max=Math.max(...rows.map(k=>Math.max(prodTotals[k][1],prodTotals[k][2])),1);
-  let out=`<svg class="svgChart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
-  rows.forEach((k,i)=>{let y=p.t+i*42;let s=prodTotals[k][1],pr=prodTotals[k][2];out+=`<text x="${p.l-10}" y="${y+14}" text-anchor="end" font-size="11" fill="#49677f">${labels[k]}</text><rect x="${p.l}" y="${y}" width="${s/max*iw}" height="11" rx="5" fill="#5db8ff" opacity=".78"/><rect x="${p.l}" y="${y+16}" width="${pr/max*iw}" height="11" rx="5" fill="#52c99a" opacity=".82"/><text x="${Math.min(W-5,p.l+s/max*iw+6)}" y="${y+9}" font-size="9" fill="#60778b">${money(s)}</text>`});
-  out+=`<text x="${p.l}" y="${H-6}" font-size="10" fill="#3e8cff">Sales</text><text x="${p.l+50}" y="${H-6}" font-size="10" fill="#16a66a">Profit</text></svg>`;
-  return out;
-}
-function renderWeekdayAnalysis(h){
-  const names=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const buckets=names.map(()=>[]);
-  h.forEach(d=>{const dt=new Date(d.date+'T00:00:00'); if(!isNaN(dt)) buckets[dt.getDay()].push(d)});
-  const valid=buckets.filter(a=>a.length);
-  const maxAvg=Math.max(...valid.map(a=>a.reduce((s,d)=>s+(d.summary.totalSales||0),0)/a.length),1);
-  if(!valid.length){document.getElementById('weekdayAnalysis').innerHTML='<div class="chartEmpty">Save days to unlock weekday analysis.</div>';return}
-  document.getElementById('weekdayAnalysis').innerHTML=buckets.map((arr,i)=>{
-    if(!arr.length)return `<div class="weekDay"><div class="weekDayName">${names[i]}</div><div class="weekSmall">No data yet</div></div>`;
-    const sales=arr.reduce((s,d)=>s+(d.summary.totalSales||0),0)/arr.length;
-    const profit=arr.reduce((s,d)=>s+(d.summary.netProfit||0),0)/arr.length;
-    const margin=sales?profit/sales*100:0;
-    const recent=arr.slice(-3).reduce((s,d)=>s+(d.summary.totalSales||0),0)/Math.min(3,arr.length);
-    let advice= sales===Math.max(...valid.map(a=>a.reduce((s,d)=>s+(d.summary.totalSales||0),0)/a.length)) ? 'Best sales day: keep strong stock and popular products ready.' :
-      margin<8 ? 'Improve: review prices, costs, and discounts to protect profit.' :
-      recent<sales*.85 ? 'Improve: sales are weakening recently; check demand and stock.' :
-      'Maintain: keep stock and pricing consistent.';
-    const best=sales===maxAvg;
-    return `<div class="weekDay ${best?'best':''}"><div class="weekDayName">${names[i]}${best?' ⭐':''}</div><div class="weekAvg">${money(sales)} AFN</div><div class="weekSmall">avg sales · ${arr.length} day${arr.length>1?'s':''}</div><div class="weekBar"><span style="width:${Math.max(4,sales/maxAvg*100)}%"></span></div><div class="weekSmall">Profit ${money(profit)} · ${margin.toFixed(1)}%</div><div class="weekAdvice">${advice}</div></div>`;
-  }).join('');
-}
+const PROD_COLORS={soap:'#007AFF',wasleen:'#5AC8FA',shampoo10:'#AF52DE',shampoo6:'#BF5AF2',surf:'#FF9500',other:'#8E8E93'};
 function renderAnalytics(){
-  let h=[...state.history].sort((a,b)=>a.date.localeCompare(b.date));
+  let h=state.history;
   renderInsights(h);
-  if(!h.length){
-    document.getElementById('analyticsCards').innerHTML='<div class="metric"><div class="label">Days Recorded</div><div class="value">0</div></div>';
-    ['analyticsProducts','analyticsTrend','analyticsProductChart','weekdayAnalysis'].forEach(id=>document.getElementById(id).innerHTML='<div class="chartEmpty">Close a day or import history to start analysis.</div>');
-    return;
-  }
-  let totalSales=0,totalProfit=0,totalExpenses=0,best=h[0];
+  renderWeekdayBreakdown(h);
+  if(!h.length){document.getElementById('analyticsCards').innerHTML='<p>No saved days yet — analytics will appear once you close your first day or import Excel data.</p>';document.getElementById('analyticsProducts').innerHTML='';document.getElementById('analyticsProductsChart').innerHTML='';document.getElementById('analyticsTrend').innerHTML='';return}
+  let totalSales=0,totalProfit=0,best=h[0];
   let prodTotals={soap:[0,0,0],wasleen:[0,0,0],shampoo10:[0,0,0],shampoo6:[0,0,0],surf:[0,0,0],other:[0,0,0]};
-  h.forEach(d=>{
-    totalSales+=d.summary.totalSales||0; totalProfit+=d.summary.netProfit||0; totalExpenses+=d.summary.expenses||d.expenses||0;
-    if((d.summary.totalSales||0)>(best.summary.totalSales||0))best=d;
-    let p=d.summary.products||{}; Object.keys(prodTotals).forEach(k=>{if(p[k]){prodTotals[k][0]+=p[k][0]||0;prodTotals[k][1]+=p[k][1]||0;prodTotals[k][2]+=p[k][2]||0}});
-  });
-  const avg=totalSales/h.length, margin=totalSales?totalProfit/totalSales*100:0;
+  h.forEach(d=>{totalSales+=d.summary.totalSales||0;totalProfit+=d.summary.netProfit||0;if((d.summary.totalSales||0)>(best.summary.totalSales||0))best=d;
+    let p=d.summary.products||{};Object.keys(prodTotals).forEach(k=>{if(p[k]){prodTotals[k][0]+=p[k][0]||0;prodTotals[k][1]+=p[k][1]||0;prodTotals[k][2]+=p[k][2]||0}})});
   document.getElementById('analyticsCards').innerHTML=`
-    <div class="metric"><div class="label">Days Recorded</div><div class="value">${h.length}</div></div>
-    <div class="metric"><div class="label">All-Time Sales</div><div class="value">${money(totalSales)}</div></div>
-    <div class="metric"><div class="label">Net Profit</div><div class="value kpiGood">${money(totalProfit)}</div></div>
-    <div class="metric"><div class="label">Profit Margin</div><div class="value ${margin<8?'kpiWarn':'kpiGood'}">${margin.toFixed(1)}%</div></div>
-    <div class="metric"><div class="label">Average Daily Sales</div><div class="value">${money(avg)}</div></div>
-    <div class="metric"><div class="label">Total Expenses</div><div class="value">${money(totalExpenses)}</div></div>
-    <div class="metric"><div class="label">Best Sales Day</div><div class="value">${money(best.summary.totalSales||0)}</div></div>
-    <div class="metric"><div class="label">Best Day</div><div class="value">${best.date}</div></div>`;
-  const labels={soap:'Soap',wasleen:'Wasleen',shampoo10:'Shampoo 10',shampoo6:'Shampoo 6',surf:'Surf',other:'Imported / Other'};
-  const rows=Object.keys(prodTotals).filter(k=>prodTotals[k][1]||prodTotals[k][2]).map(k=>`<tr><td>${labels[k]}</td><td>${money(prodTotals[k][0])}</td><td>${money(prodTotals[k][1])}</td><td>${money(prodTotals[k][2])}</td><td>${prodTotals[k][1]?(prodTotals[k][2]/prodTotals[k][1]*100).toFixed(1)+'%':'—'}</td></tr>`).join('');
-  document.getElementById('analyticsProducts').innerHTML=`<table><tr><th>Product</th><th>Quantity</th><th>Sales</th><th>Profit</th><th>Margin</th></tr>${rows}</table>`;
+  <div class="card glass"><div class="label">Days Recorded</div><div class="value">${h.length}</div></div>
+  <div class="card glass"><div class="label">All-Time Sales</div><div class="value">${money(totalSales)}</div></div>
+  <div class="card glass"><div class="label">All-Time Profit</div><div class="value">${money(totalProfit)}</div></div>
+  <div class="card glass"><div class="label">Avg Daily Sales</div><div class="value">${money(totalSales/h.length)}</div></div>`;
+  let labels={soap:'Soap',wasleen:'Wasleen',shampoo10:'Shampoo 10',shampoo6:'Shampoo 6',surf:'Surf',other:'Imported / Other'};
+  let activeKeys=Object.keys(prodTotals).filter(k=>prodTotals[k][1]||prodTotals[k][2]);
+  let rows=activeKeys.map(k=>`<tr><td>${labels[k]}</td><td>${money(prodTotals[k][0])}</td><td>${money(prodTotals[k][1])}</td><td>${money(prodTotals[k][2])}</td></tr>`).join('');
+  document.getElementById('analyticsProducts').innerHTML=`<table><tr><th>Product</th><th>Quantity</th><th>Sales</th><th>Profit</th></tr>${rows}</table>`;
+  let maxProd=Math.max(...activeKeys.map(k=>prodTotals[k][1]),1);
+  document.getElementById('analyticsProductsChart').innerHTML=activeKeys.map(k=>`
+    <div class="prodBarRow"><span>${labels[k]}</span>
+    <div class="prodBarTrack"><div class="prodBarFill" style="width:${Math.max(4,prodTotals[k][1]/maxProd*100)}%;background:${PROD_COLORS[k]}"></div></div>
+    <span>${money(prodTotals[k][1])}</span></div>`).join('');
+  renderTrendChart(h);
+}
+function svgLineChart(data,opts={}){
+  const w=opts.w||600,h=opts.h||190,pad=26;
+  const vals=data.map(d=>d.value);
+  const max=Math.max(...vals,1),min=Math.min(0,...vals);
+  const range=(max-min)||1;
+  const stepX=data.length>1?(w-pad*2)/(data.length-1):0;
+  const pts=data.map((d,i)=>[pad+i*stepX, h-pad-((d.value-min)/range)*(h-pad*2)]);
+  const linePath=pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const areaPath=linePath+` L${pts[pts.length-1][0].toFixed(1)},${h-pad} L${pts[0][0].toFixed(1)},${h-pad} Z`;
+  const dots=pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="#007AFF"/>`).join('');
+  const labelEvery=Math.max(1,Math.ceil(data.length/6));
+  const labels=data.map((d,i)=>(i%labelEvery===0||i===data.length-1)?`<text x="${pts[i][0].toFixed(1)}" y="${h-6}" font-size="9.5" fill="#8E8E93" text-anchor="middle">${d.label}</text>`:'').join('');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#007AFF" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#007AFF" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${areaPath}" fill="url(#trendGrad)"/>
+    <path d="${linePath}" fill="none" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}${labels}
+  </svg>`;
+}
+function renderTrendChart(h){
+  const box=document.getElementById('analyticsTrend');
   const last30=h.slice(-30);
-  document.getElementById('analyticsTrend').innerHTML=svgLineChart(last30);
-  document.getElementById('analyticsProductChart').innerHTML=svgProductChart(prodTotals,labels);
-  renderWeekdayAnalysis(h);
+  if(!last30.length){box.innerHTML='<p>No data.</p>';return}
+  const data=last30.map(d=>({label:d.date.slice(5),value:d.summary.totalSales||0}));
+  box.innerHTML=svgLineChart(data,{w:600,h:190});
+}
+function renderWeekdayBreakdown(h){
+  const box=document.getElementById('analyticsWeekday');
+  if(!box)return;
+  if(h.length<3){box.innerHTML='<p class="insightEmpty">Save a few more days to unlock the weekday breakdown.</p>';return}
+  const dowNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const byDow=[[],[],[],[],[],[],[]];
+  h.forEach(d=>{const dow=new Date(d.date+'T00:00:00').getDay();byDow[dow].push(d)});
+  const overallAvg=h.reduce((a,d)=>a+(d.summary.totalSales||0),0)/h.length;
+  const rows=byDow.map((arr,i)=>{
+    if(!arr.length) return {i,name:dowNames[i],n:0,avgSales:0,avgProfit:0};
+    const avgSales=arr.reduce((a,d)=>a+(d.summary.totalSales||0),0)/arr.length;
+    const avgProfit=arr.reduce((a,d)=>a+(d.summary.netProfit||0),0)/arr.length;
+    return {i,name:dowNames[i],n:arr.length,avgSales,avgProfit};
+  });
+  const maxAvg=Math.max(...rows.map(r=>r.avgSales),1);
+  box.innerHTML=rows.map(r=>{
+    let note;
+    if(r.n===0){ note='No saved days yet on this weekday — close a day that falls on '+r.name+' to see it here.'; }
+    else{
+      const diff=overallAvg?(r.avgSales-overallAvg)/overallAvg*100:0;
+      if(diff>=15) note=`Strong day — ${diff.toFixed(0)}% above your daily average. Keep stock well topped up.`;
+      else if(diff<=-15) note=`Below average by ${Math.abs(diff).toFixed(0)}% — consider a small promotion or check foot traffic on this day.`;
+      else note='Close to your typical daily average — steady performer.';
+    }
+    const pct=r.n?Math.max(4,r.avgSales/maxAvg*100):0;
+    const barColor=r.n===0?'#D1D1D6':(r.avgSales>=overallAvg?'#34C759':'#FF9500');
+    return `<div class="wdRow">
+      <div class="wdHead"><span class="wdName">${r.name}</span><span class="wdVal">${r.n?money(r.avgSales)+' AFN avg · '+r.n+' day'+(r.n>1?'s':''):'—'}</span></div>
+      <div class="wdBarTrack"><div class="wdBar" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="wdNote">${note}</div>
+    </div>`;
+  }).join('');
 }
 function renderInsights(h){
   const box=document.getElementById('analyticsInsights');
